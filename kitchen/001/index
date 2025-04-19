@@ -101,7 +101,7 @@
     <div class="container">
         <div class="card">
             <div class="upload-section" onclick="document.getElementById('fileInput').click()">
-                <p>点击上传厨具图片</p>
+                <p>点击上传厨具图片-3</p>
                 <img id="imagePreview" alt="图片预览">
                 <input type="file" id="fileInput" accept="image/*" hidden>
             </div>
