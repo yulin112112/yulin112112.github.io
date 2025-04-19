@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>厨具魂斗力测试仪</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .upload-section {
+            text-align: center;
+            border: 2px dashed #ddd;
+            padding: 30px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        #imagePreview {
+            max-width: 200px;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .param-group {
+            margin: 15px 0;
+        }
+
+        .param-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #calculateBtn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: transform 0.2s;
+        }
+
+        #calculateBtn:hover {
+            transform: scale(1.05);
+        }
+
+        #result {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+                <p>点击上传厨具图片</p>
+                <img id="imagePreview" alt="图片预览">
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="param-group">
+                <div class="param-label">
+                    <span>💰 价格</span>
+                    <input type="number" id="price" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="priceRange" min="1" max="100" value="50">
+            </div>
+
+            <!-- 类似结构添加其他参数 -->
+            <div class="param-group">
+                <div class="param-label">
+                    <span>🔪 锋利值或味觉度</span>
+                    <input type="number" id="sharpness" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="sharpnessRange" min="1" max="100" value="50">
+            </div>
+
+            <div class="param-group">
+                <div class="param-label">
+                    <span>📅 日使用频率</span>
+                    <input type="number" id="frequency" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="frequencyRange" min="1" max="100" value="50">
+            </div>
+
+            <div class="param-group">
+                <div class="param-label">
+                    <span>🥄 每次用量</span>
+                    <input type="number" id="dosage" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="dosageRange" min="1" max="100" value="50">
+            </div>
+
+            <div class="param-group">
+                <div class="param-label">
+                    <span>📉 损耗率</span>
+                    <input type="number" id="wear" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="wearRange" min="1" max="100" value="50">
+            </div>
+
+            <div class="param-group">
+                <div class="param-label">
+                    <span>♻️ 复用率</span>
+                    <input type="number" id="reuse" min="1" max="100" value="50">
+                </div>
+                <input type="range" id="reuseRange" min="1" max="100" value="50">
+            </div>
+        </div>
+
+        <button id="calculateBtn">计算魂斗力</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // 图片预览功能
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('imagePreview');
+                preview.style.display = 'block';
+                preview.src = reader.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        // 双向绑定输入控件
+        const params = ['price', 'sharpness', 'frequency', 'dosage', 'wear', 'reuse'];
+        params.forEach(param => {
+            const numberInput = document.getElementById(param);
+            const rangeInput = document.getElementById(param + 'Range');
+            
+            numberInput.addEventListener('input', () => {
+                rangeInput.value = numberInput.value;
+            });
+            
+            rangeInput.addEventListener('input', () => {
+                numberInput.value = rangeInput.value;
+            });
+        });
+
+        // 计算魂斗力
+        document.getElementById('calculateBtn').addEventListener('click', () => {
+            const values = {
+                price: parseInt(document.getElementById('price').value),
+                sharpness: parseInt(document.getElementById('sharpness').value),
+                frequency: parseInt(document.getElementById('frequency').value),
+                dosage: parseInt(document.getElementById('dosage').value),
+                wear: parseInt(document.getElementById('wear').value),
+                reuse: parseInt(document.getElementById('reuse').value)
+            };
+
+            // 计算公式（可根据需要调整权重）
+            const score = 
+                values.price * 0.15 +
+                values.sharpness * 0.25 +
+                values.frequency * 0.2 +
+                values.dosage * 0.1 -
+                values.wear * 0.2 +
+                values.reuse * 0.1;
+
+            const result = Math.min(Math.max(Math.round(score), 0), 100);
+            
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = `🔥 魂斗力值：${result}`;
+            resultElement.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
